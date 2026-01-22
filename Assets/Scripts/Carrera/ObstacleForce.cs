@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class ObstacleForce : MonoBehaviour
 {
-    public float pushForce = 8f;
-    public float stunDuration = 1.5f;
+    public float pushForce = 25f;
+    public float stunDuration = 1f;
     public bool rotateObstacle = false;
     public float rotationSpeed = 120f;
 

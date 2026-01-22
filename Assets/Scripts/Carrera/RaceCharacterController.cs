@@ -38,10 +38,14 @@ public class RaceCharacterController : MonoBehaviour, IStunnable
     void Update()
     {
         // Aplicar y reducir knockback
-        if (knockbackVelocity.magnitude > 0.1f)
+        if (knockbackVelocity.magnitude > 0.5f)
         {
             controller.Move(knockbackVelocity * Time.deltaTime);
-            knockbackVelocity = Vector3.Lerp(knockbackVelocity, Vector3.zero, 5f * Time.deltaTime);
+            knockbackVelocity *= 0.92f; // Reducción más gradual
+        }
+        else
+        {
+            knockbackVelocity = Vector3.zero;
         }
 
         if (!canMove || stunned)
@@ -100,12 +104,6 @@ public class RaceCharacterController : MonoBehaviour, IStunnable
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-
-        // PUSH
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            animator.SetTrigger("Push");
-        }
     }
 
     public void Stun(float duration)
