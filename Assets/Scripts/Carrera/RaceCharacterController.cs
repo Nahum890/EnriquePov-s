@@ -15,6 +15,7 @@ public class RaceCharacterController : MonoBehaviour, IStunnable
     private CharacterController controller;
     private Animator animator;
     private Vector3 velocity;
+    private Vector3 knockbackVelocity;
     private Transform cameraTransform;
 
     private bool stunned;
@@ -36,6 +37,13 @@ public class RaceCharacterController : MonoBehaviour, IStunnable
 
     void Update()
     {
+        // Aplicar y reducir knockback
+        if (knockbackVelocity.magnitude > 0.1f)
+        {
+            controller.Move(knockbackVelocity * Time.deltaTime);
+            knockbackVelocity = Vector3.Lerp(knockbackVelocity, Vector3.zero, 5f * Time.deltaTime);
+        }
+
         if (!canMove || stunned)
         {
             animator.SetFloat("Speed", 0);
@@ -112,5 +120,10 @@ public class RaceCharacterController : MonoBehaviour, IStunnable
         animator.SetFloat("Speed", 0);
         yield return new WaitForSeconds(time);
         stunned = false;
+    }
+
+    public void ApplyKnockback(Vector3 direction, float force)
+    {
+        knockbackVelocity = direction.normalized * force;
     }
 }

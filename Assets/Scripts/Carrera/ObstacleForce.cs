@@ -15,13 +15,24 @@ public class ObstacleForce : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        CharacterController cc = other.GetComponent<CharacterController>();
-        if (cc)
+        Vector3 dir = (other.transform.position - transform.position).normalized;
+        dir.y = 0;
+
+        // Aplicar knockback a NPCs
+        NPCAI npc = other.GetComponent<NPCAI>();
+        if (npc != null)
         {
-            Vector3 dir = (other.transform.position - transform.position).normalized;
-            cc.Move(dir * pushForce * Time.deltaTime);
+            npc.ApplyKnockback(dir, pushForce);
         }
 
+        // Aplicar knockback a jugador
+        RaceCharacterController player = other.GetComponent<RaceCharacterController>();
+        if (player != null)
+        {
+            player.ApplyKnockback(dir, pushForce);
+        }
+
+        // Aplicar stun
         IStunnable stun = other.GetComponent<IStunnable>();
         if (stun != null)
         {

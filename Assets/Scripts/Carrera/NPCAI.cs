@@ -27,6 +27,7 @@ public class NPCAI : MonoBehaviour, IStunnable
     private float lastCheckTime;
     private Vector3 cachedMoveDir;
     private Vector3 velocity;
+    private Vector3 knockbackVelocity;
     private bool stunned;
 
     void Start()
@@ -44,6 +45,13 @@ public class NPCAI : MonoBehaviour, IStunnable
         }
         velocity.y += gravity * Time.deltaTime;
         cc.Move(velocity * Time.deltaTime);
+
+        // Aplicar y reducir knockback
+        if (knockbackVelocity.magnitude > 0.1f)
+        {
+            cc.Move(knockbackVelocity * Time.deltaTime);
+            knockbackVelocity = Vector3.Lerp(knockbackVelocity, Vector3.zero, 5f * Time.deltaTime);
+        }
 
         if (!canMove || goal == null || stunned)
         {
@@ -79,12 +87,17 @@ public class NPCAI : MonoBehaviour, IStunnable
         // Mover usando la velocidad del NPC
         cc.Move(moveDir * npcSpeed * Time.deltaTime);
 
-        // Actualizar animación
+        // Actualizar animación (1f = correr)
         if (animator != null)
         {
-            animator.SetFloat("Speed", 0.5f); // Velocidad de caminata
+            animator.SetFloat("Speed", 1f);
             animator.SetBool("IsGrounded", cc.isGrounded);
         }
+    }
+
+    public void ApplyKnockback(Vector3 direction, float force)
+    {
+        knockbackVelocity = direction.normalized * force;
     }
 
     public void Stun(float duration)
