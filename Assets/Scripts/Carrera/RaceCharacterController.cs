@@ -8,12 +8,14 @@ public class RaceCharacterController : MonoBehaviour, IStunnable
     public float runSpeed = 7f;
     public float jumpForce = 6f;
     public float gravity = -15f;
+    public float rotationSpeed = 12f;
 
     public bool canMove = true;
 
     private CharacterController controller;
     private Animator animator;
     private Vector3 velocity;
+    private Transform cameraTransform;
 
     private bool stunned;
 
@@ -23,9 +25,18 @@ public class RaceCharacterController : MonoBehaviour, IStunnable
         animator = GetComponentInChildren<Animator>();
     }
 
+    void Start()
+    {
+        // Obtener referencia a la cámara principal
+        if (Camera.main != null)
+        {
+            cameraTransform = Camera.main.transform;
+        }
+    }
+
     void Update()
     {
-        if (!canMove || stunned) 
+        if (!canMove || stunned)
         {
             animator.SetFloat("Speed", 0);
             return;
@@ -34,13 +45,33 @@ public class RaceCharacterController : MonoBehaviour, IStunnable
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
-        Vector3 move = new Vector3(h, 0, v);
-        float inputMagnitude = Mathf.Clamp01(move.magnitude);
+        Vector3 move = Vector3.zero;
+        float inputMagnitude = Mathf.Clamp01(new Vector3(h, 0, v).magnitude);
+
+        if (inputMagnitude > 0.1f)
+        {
+            // Calcular dirección relativa a la cámara
+            Vector3 cameraForward = cameraTransform != null ? cameraTransform.forward : Vector3.forward;
+            Vector3 cameraRight = cameraTransform != null ? cameraTransform.right : Vector3.right;
+
+            // Proyectar en el plano horizontal
+            cameraForward.y = 0;
+            cameraRight.y = 0;
+            cameraForward.Normalize();
+            cameraRight.Normalize();
+
+            // Movimiento relativo a la cámara
+            move = (cameraForward * v + cameraRight * h).normalized;
+
+            // Rotar el personaje hacia la dirección de movimiento
+            Quaternion targetRotation = Quaternion.LookRotation(move);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
 
         bool running = Input.GetKey(KeyCode.LeftShift);
         float speed = running ? runSpeed : walkSpeed;
 
-        controller.Move(transform.TransformDirection(move) * speed * Time.deltaTime);
+        controller.Move(move * speed * Time.deltaTime);
 
         animator.SetFloat("Speed", inputMagnitude * (running ? 1f : 0.5f));
 
