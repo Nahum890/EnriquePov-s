@@ -7,7 +7,7 @@ public class CountdownManager : MonoBehaviour
     public TMP_Text countdownText;
 
     public RaceCharacterController player;
-    public RaceCharacterController[] npcs;
+    public NPCAI[] npcs;
 
     private bool countdownFinished = false;
 

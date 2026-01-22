@@ -4,7 +4,7 @@ public class TutorialManager : MonoBehaviour
 {
     public GameObject tutorialPanel;
     public RaceCharacterController player;
-    public RaceCharacterController[] npcs;
+    public NPCAI[] npcs;
 
     void Start()
     {

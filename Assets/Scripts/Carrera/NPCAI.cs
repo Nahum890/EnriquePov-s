@@ -1,12 +1,14 @@
 using UnityEngine;
 
-[RequireComponent(typeof(RaceCharacterController))]
-public class NPCAI : MonoBehaviour
+[RequireComponent(typeof(CharacterController))]
+public class NPCAI : MonoBehaviour, IStunnable
 {
     public Transform goal;
 
     [Header("Movement")]
     [SerializeField] private float npcSpeed = 5.5f;  // Más lento que el jugador (7f)
+    [SerializeField] private float gravity = -15f;
+    [SerializeField] private float rotationSpeed = 5f;
 
     [Header("Obstacle Avoidance")]
     [SerializeField] private float detectionDistance = 4f;
@@ -18,21 +20,36 @@ public class NPCAI : MonoBehaviour
     [Range(0f, 0.3f)]
     [SerializeField] private float mistakeChance = 0.08f;
 
-    private RaceCharacterController controller;
+    [HideInInspector] public bool canMove = false;
+
     private CharacterController cc;
+    private Animator animator;
     private float lastCheckTime;
     private Vector3 cachedMoveDir;
+    private Vector3 velocity;
+    private bool stunned;
 
     void Start()
     {
-        controller = GetComponent<RaceCharacterController>();
         cc = GetComponent<CharacterController>();
-        controller.canMove = false;
+        animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
     {
-        if (!controller.canMove || goal == null) return;
+        // Aplicar gravedad siempre
+        if (cc.isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+        velocity.y += gravity * Time.deltaTime;
+        cc.Move(velocity * Time.deltaTime);
+
+        if (!canMove || goal == null || stunned)
+        {
+            if (animator != null) animator.SetFloat("Speed", 0);
+            return;
+        }
 
         Vector3 dirToGoal = (goal.position - transform.position);
         dirToGoal.y = 0;
@@ -56,11 +73,32 @@ public class NPCAI : MonoBehaviour
         // Rotar hacia la dirección de movimiento
         if (moveDir != Vector3.zero)
         {
-            transform.forward = Vector3.Lerp(transform.forward, moveDir, Time.deltaTime * 5f);
+            transform.forward = Vector3.Lerp(transform.forward, moveDir, Time.deltaTime * rotationSpeed);
         }
 
-        // Mover usando la velocidad del NPC (no la del jugador)
+        // Mover usando la velocidad del NPC
         cc.Move(moveDir * npcSpeed * Time.deltaTime);
+
+        // Actualizar animación
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", 0.5f); // Velocidad de caminata
+            animator.SetBool("IsGrounded", cc.isGrounded);
+        }
+    }
+
+    public void Stun(float duration)
+    {
+        if (!gameObject.activeInHierarchy) return;
+        StartCoroutine(StunRoutine(duration));
+    }
+
+    private System.Collections.IEnumerator StunRoutine(float time)
+    {
+        stunned = true;
+        if (animator != null) animator.SetFloat("Speed", 0);
+        yield return new WaitForSeconds(time);
+        stunned = false;
     }
 
     private Vector3 CalculateMovementDirection(Vector3 dirToGoal)
