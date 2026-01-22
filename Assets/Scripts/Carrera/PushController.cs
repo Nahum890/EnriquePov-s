@@ -9,15 +9,19 @@ public class PushController : MonoBehaviour
 
     private float lastPushTime;
     private Animator animator;
+    private bool isPlayer;
 
     void Start()
     {
         animator = GetComponentInChildren<Animator>();
+        // Solo el jugador puede usar input
+        isPlayer = CompareTag("Player");
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        // Solo el jugador responde al input E
+        if (isPlayer && Input.GetKeyDown(KeyCode.E))
         {
             TryPush();
         }
