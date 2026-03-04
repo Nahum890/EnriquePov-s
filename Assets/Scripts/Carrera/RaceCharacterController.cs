@@ -2,108 +2,164 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
-public class RaceCharacterController : MonoBehaviour, IStunnable
+public class RaceCharacterController : MonoBehaviour
 {
-    public float walkSpeed = 4f;
-    public float runSpeed = 7f;
-    public float jumpForce = 6f;
-    public float gravity = -15f;
-    public float rotationSpeed = 12f;
+    [Header("Movement")]
+    public float walkSpeed = 5f;
+    public float runSpeed = 10f;
+    public float acceleration = 14f;
+    public float deceleration = 18f;
 
+    [Header("Jump")]
+    public float jumpForce = 4.5f;              // más bajo
+    public float runJumpMultiplier = 1.4f;      // más largo
+    public float gravity = -30f;                 // caída más rápida
+    public float airControl = 0.45f;
+
+    [Header("Knockback")]
+    public float knockbackDecay = 8f;
+
+    [Header("State")]
     public bool canMove = true;
 
     private CharacterController controller;
     private Animator animator;
-    private Vector3 velocity;
-    private Vector3 knockbackVelocity;
-    private Transform cameraTransform;
+    private Transform cam;
 
+    private Vector3 velocity;
+    private Vector3 externalForce;
+    private Vector3 moveDirection;
+
+    private float currentSpeed;
     private bool stunned;
 
     void Awake()
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
-    }
-
-    void Start()
-    {
-        // Obtener referencia a la cámara principal
-        if (Camera.main != null)
-        {
-            cameraTransform = Camera.main.transform;
-        }
+        cam = Camera.main.transform;
     }
 
     void Update()
     {
-        // Aplicar y reducir knockback
-        if (knockbackVelocity.magnitude > 0.5f)
-        {
-            controller.Move(knockbackVelocity * Time.deltaTime);
-            knockbackVelocity *= 0.92f; // Reducción más gradual
-        }
-        else
-        {
-            knockbackVelocity = Vector3.zero;
-        }
+        if (!canMove || stunned) return;
 
-        if (!canMove || stunned)
-        {
-            animator.SetFloat("Speed", 0);
-            return;
-        }
+        bool grounded = controller.isGrounded;
 
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
+        bool running = Input.GetKey(KeyCode.LeftShift);
+        bool jumpPressed = Input.GetButtonDown("Jump");
 
-        Vector3 move = Vector3.zero;
-        float inputMagnitude = Mathf.Clamp01(new Vector3(h, 0, v).magnitude);
+        Vector3 inputDir = new Vector3(h, 0, v).normalized;
 
-        if (inputMagnitude > 0.1f)
+        // =============================
+        // MOVIMIENTO RELATIVO A CÁMARA
+        // =============================
+        Vector3 camForward = cam.forward;
+        Vector3 camRight = cam.right;
+
+        camForward.y = 0;
+        camRight.y = 0;
+
+        camForward.Normalize();
+        camRight.Normalize();
+
+        Vector3 desiredMove =
+            camForward * inputDir.z +
+            camRight * inputDir.x;
+
+        // =============================
+        // ROTACIÓN DEL MODELO
+        // =============================
+        if (desiredMove.magnitude > 0.1f)
         {
-            // Calcular dirección relativa a la cámara
-            Vector3 cameraForward = cameraTransform != null ? cameraTransform.forward : Vector3.forward;
-            Vector3 cameraRight = cameraTransform != null ? cameraTransform.right : Vector3.right;
-
-            // Proyectar en el plano horizontal
-            cameraForward.y = 0;
-            cameraRight.y = 0;
-            cameraForward.Normalize();
-            cameraRight.Normalize();
-
-            // Movimiento relativo a la cámara
-            move = (cameraForward * v + cameraRight * h).normalized;
-
-            // Rotar el personaje hacia la dirección de movimiento
-            Quaternion targetRotation = Quaternion.LookRotation(move);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            Quaternion targetRot = Quaternion.LookRotation(desiredMove);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRot,
+                12f * Time.deltaTime
+            );
         }
 
-        bool running = Input.GetKey(KeyCode.LeftShift);
-        float speed = running ? runSpeed : walkSpeed;
+        // =============================
+        // ACELERACIÓN / MOMENTUM
+        // =============================
+        float targetSpeed = running ? runSpeed : walkSpeed;
 
-        controller.Move(move * speed * Time.deltaTime);
-
-        animator.SetFloat("Speed", inputMagnitude * (running ? 1f : 0.5f));
-
-        // Ground check
-        bool grounded = controller.isGrounded;
-        animator.SetBool("IsGrounded", grounded);
+        if (inputDir.magnitude > 0)
+            currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.deltaTime);
+        else
+            currentSpeed = Mathf.MoveTowards(currentSpeed, 0, deceleration * Time.deltaTime);
 
         if (grounded)
-        {
-            if (velocity.y < 0) velocity.y = -2f;
+            moveDirection = desiredMove;
+        else
+            moveDirection = Vector3.Lerp(moveDirection, desiredMove, airControl * Time.deltaTime);
 
-            if (Input.GetButtonDown("Jump"))
+        velocity.x = moveDirection.x * currentSpeed;
+        velocity.z = moveDirection.z * currentSpeed;
+
+        // =============================
+        // SALTO PARKOUR
+        // =============================
+        if (grounded)
+        {
+            if (velocity.y < 0)
+                velocity.y = -2f;
+
+            if (jumpPressed)
             {
+                float boost = running ? runJumpMultiplier : 1f;
                 velocity.y = jumpForce;
-                animator.SetTrigger("Jump");
+                velocity.x *= boost;
+                velocity.z *= boost;
+
+                animator?.SetTrigger("Jump");
             }
         }
 
         velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+
+        // =============================
+        // KNOCKBACK
+        // =============================
+        externalForce = Vector3.Lerp(
+            externalForce,
+            Vector3.zero,
+            knockbackDecay * Time.deltaTime
+        );
+
+        Vector3 finalMove = velocity + externalForce;
+        controller.Move(finalMove * Time.deltaTime);
+
+        UpdateAnimator(grounded, running);
+    }
+
+    void UpdateAnimator(bool grounded, bool running)
+    {
+        if (!animator) return;
+
+        float speedPercent = currentSpeed / runSpeed;
+        animator.SetFloat("Speed", speedPercent, 0.12f, Time.deltaTime);
+        animator.SetBool("IsRunning", running);
+        animator.SetBool("IsGrounded", grounded);
+    }
+
+    // =============================
+    // EMPUJONES / STUN
+    // =============================
+    public void ApplyKnockback(Vector3 direction, float force, float stunTime = 0.15f)
+    {
+        direction.y = 0;
+        direction.Normalize();
+
+        externalForce = direction * force;
+
+        if (stunTime > 0)
+            Stun(stunTime);
+
+        animator?.SetTrigger("Push");
     }
 
     public void Stun(float duration)
@@ -115,13 +171,7 @@ public class RaceCharacterController : MonoBehaviour, IStunnable
     IEnumerator StunRoutine(float time)
     {
         stunned = true;
-        animator.SetFloat("Speed", 0);
         yield return new WaitForSeconds(time);
         stunned = false;
-    }
-
-    public void ApplyKnockback(Vector3 direction, float force)
-    {
-        knockbackVelocity = direction.normalized * force;
     }
 }

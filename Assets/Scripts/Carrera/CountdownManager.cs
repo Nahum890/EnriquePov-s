@@ -1,51 +1,43 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class CountdownManager : MonoBehaviour
 {
-    public float countdownTime = 3f;
-    public TMP_Text countdownText;
+    public TextMeshProUGUI countdownText;
 
     public RaceCharacterController player;
-    public NPCAI[] npcs;
+    public NPCAI_Rigidbody[] npcs;
 
-    private bool countdownFinished = false;
+    public float countdownTime = 3f;
 
     void Start()
     {
-        // Bloquear movimiento
-        player.canMove = false;
+        StartCoroutine(Countdown());
+    }
 
+    IEnumerator Countdown()
+    {
+        player.canMove = false;
         foreach (var npc in npcs)
             npc.canMove = false;
-    }
 
-    void Update()
-    {
-        if (countdownFinished) return;
+        float t = countdownTime;
 
-        countdownTime -= Time.deltaTime;
-
-        if (countdownTime > 0)
+        while (t > 0)
         {
-            countdownText.text = Mathf.Ceil(countdownTime).ToString();
+            countdownText.text = Mathf.Ceil(t).ToString();
+            yield return new WaitForSeconds(1f);
+            t--;
         }
-        else
-        {
-            countdownText.text = "YA!";
-            countdownFinished = true;
 
-            // Activar movimiento
-            player.canMove = true;
-            foreach (var npc in npcs)
-                npc.canMove = true;
+        countdownText.text = "GO!";
+        player.canMove = true;
 
-            Invoke(nameof(HideCountdown), 1f);
-        }
-    }
+        foreach (var npc in npcs)
+            npc.canMove = true;
 
-    void HideCountdown()
-    {
+        yield return new WaitForSeconds(1f);
         countdownText.gameObject.SetActive(false);
     }
 }

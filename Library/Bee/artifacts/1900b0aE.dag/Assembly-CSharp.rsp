@@ -386,7 +386,7 @@
 "Assets/Scripts/Carrera/IStunnable.cs"
 "Assets/Scripts/Carrera/MinigameEntrance.cs"
 "Assets/Scripts/Carrera/MovingObstacle.cs"
-"Assets/Scripts/Carrera/NPCAI.cs"
+"Assets/Scripts/Carrera/NPCAI_Rigidbody.cs"
 "Assets/Scripts/Carrera/ObstacleForce.cs"
 "Assets/Scripts/Carrera/PushController.cs"
 "Assets/Scripts/Carrera/RaceCamera.cs"
