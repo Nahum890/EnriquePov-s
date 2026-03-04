@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
-public class RaceCharacterController : MonoBehaviour, IStunnable
+public class RaceCharacterController : MonoBehaviour, IStunnable, IKnockbackable
 {
     public float walkSpeed = 4f;
     public float runSpeed = 7f;
