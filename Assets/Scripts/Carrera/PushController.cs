@@ -46,21 +46,16 @@ public class PushController : MonoBehaviour
             Vector3 dir = (hit.transform.position - transform.position).normalized;
             dir.y = 0;
 
-            // Empujar NPCs
-            NPCAI npc = hit.GetComponent<NPCAI>();
-            if (npc != null)
+            IKnockbackable knockbackable = hit.GetComponent<IKnockbackable>();
+            if (knockbackable != null)
             {
-                npc.ApplyKnockback(dir, pushForce);
-                npc.Stun(stunDuration);
-                continue;
+                knockbackable.ApplyKnockback(dir, pushForce);
             }
 
-            // Empujar otros jugadores
-            RaceCharacterController player = hit.GetComponent<RaceCharacterController>();
-            if (player != null)
+            IStunnable stunnable = hit.GetComponent<IStunnable>();
+            if (stunnable != null)
             {
-                player.ApplyKnockback(dir, pushForce);
-                player.Stun(stunDuration);
+                stunnable.Stun(stunDuration);
             }
         }
     }

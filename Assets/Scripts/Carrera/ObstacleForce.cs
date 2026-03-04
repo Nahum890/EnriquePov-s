@@ -18,21 +18,12 @@ public class ObstacleForce : MonoBehaviour
         Vector3 dir = (other.transform.position - transform.position).normalized;
         dir.y = 0;
 
-        // Aplicar knockback a NPCs
-        NPCAI npc = other.GetComponent<NPCAI>();
-        if (npc != null)
+        IKnockbackable knockbackable = other.GetComponent<IKnockbackable>();
+        if (knockbackable != null)
         {
-            npc.ApplyKnockback(dir, pushForce);
+            knockbackable.ApplyKnockback(dir, pushForce);
         }
 
-        // Aplicar knockback a jugador
-        RaceCharacterController player = other.GetComponent<RaceCharacterController>();
-        if (player != null)
-        {
-            player.ApplyKnockback(dir, pushForce);
-        }
-
-        // Aplicar stun
         IStunnable stun = other.GetComponent<IStunnable>();
         if (stun != null)
         {

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class NPCAI : MonoBehaviour, IStunnable
+public class NPCAI : MonoBehaviour, IStunnable, IKnockbackable
 {
     public Transform goal;
 
