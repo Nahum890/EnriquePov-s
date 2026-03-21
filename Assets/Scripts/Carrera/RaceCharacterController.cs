@@ -2,22 +2,13 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
-public class RaceCharacterController : MonoBehaviour
+public class RaceCharacterController : MonoBehaviour, IStunnable, IKnockbackable
 {
-    [Header("Movement")]
-    public float walkSpeed = 5f;
-    public float runSpeed = 10f;
-    public float acceleration = 14f;
-    public float deceleration = 18f;
-
-    [Header("Jump")]
-    public float jumpForce = 4.5f;              // más bajo
-    public float runJumpMultiplier = 1.4f;      // más largo
-    public float gravity = -30f;                 // caída más rápida
-    public float airControl = 0.45f;
-
-    [Header("Knockback")]
-    public float knockbackDecay = 8f;
+    public float walkSpeed = 4f;
+    public float runSpeed = 7f;
+    public float jumpForce = 6f;
+    public float gravity = -15f;
+    public float rotationSpeed = 12f;
 
     [Header("State")]
     public bool canMove = true;
