@@ -5,6 +5,7 @@ public class ScoreManager : MonoBehaviour
     public static ScoreManager Instance;
 
     public int totalPoints = 0;
+    public int quizzesCompleted = 0;
 
     private void Awake()
     {

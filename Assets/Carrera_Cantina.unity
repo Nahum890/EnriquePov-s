@@ -885,6 +885,11 @@ MonoBehaviour:
   jumpForce: 6
   gravity: -15
   rotationSpeed: 12
+  acceleration: 10
+  deceleration: 8
+  airControl: 3
+  runJumpMultiplier: 1.3
+  knockbackDecay: 5
   canMove: 0
 --- !u!114 &500466412
 MonoBehaviour:
@@ -899,9 +904,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goal: {fileID: 1611734508}
-  npcSpeed: 5.5
-  gravity: -15
+  moveSpeed: 7.5
+  acceleration: 20
   rotationSpeed: 5
+  jumpForce: 6
+  jumpForwardBoost: 1.2
+  jumpCooldown: 1.2
+  detectDistance: 1.4
+  lowRayHeight: 0.4
+  highRayHeight: 1.2
   avoidTime: 0.5
   mistakeChance: 0.08
   canMove: 0
@@ -967,6 +978,33 @@ MonoBehaviour:
   stunDuration: 0.8
   pushRadius: 1.2
   pushCooldown: 1
+--- !u!54 &500466420
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500466409}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &506807261
 GameObject:
   m_ObjectHideFlags: 0
@@ -2707,6 +2745,11 @@ MonoBehaviour:
   jumpForce: 6
   gravity: -15
   rotationSpeed: 12
+  acceleration: 10
+  deceleration: 8
+  airControl: 3
+  runJumpMultiplier: 1.3
+  knockbackDecay: 5
   canMove: 0
 --- !u!114 &1324792191
 MonoBehaviour:
@@ -2721,9 +2764,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goal: {fileID: 1611734508}
-  npcSpeed: 5.5
-  gravity: -15
+  moveSpeed: 7.5
+  acceleration: 20
   rotationSpeed: 5
+  jumpForce: 6
+  jumpForwardBoost: 1.2
+  jumpCooldown: 1.2
+  detectDistance: 1.4
+  lowRayHeight: 0.4
+  highRayHeight: 1.2
   avoidTime: 0.5
   mistakeChance: 0.08
   canMove: 0
@@ -2766,6 +2815,33 @@ MonoBehaviour:
   stunDuration: 0.8
   pushRadius: 1.2
   pushCooldown: 1
+--- !u!54 &1324792196
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324792183}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1360306001
 GameObject:
   m_ObjectHideFlags: 0
@@ -3673,6 +3749,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c435f48011e092e449f342c298ea438a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1324792194}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c435f48011e092e449f342c298ea438a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1324792196}
   m_SourcePrefab: {fileID: 100100000, guid: c435f48011e092e449f342c298ea438a, type: 3}
 --- !u!1001 &1512387402
 PrefabInstance:
@@ -4032,6 +4111,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c435f48011e092e449f342c298ea438a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 500466418}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c435f48011e092e449f342c298ea438a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 500466420}
   m_SourcePrefab: {fileID: 100100000, guid: c435f48011e092e449f342c298ea438a, type: 3}
 --- !u!1 &1535133406 stripped
 GameObject:
@@ -4762,6 +4844,11 @@ MonoBehaviour:
   jumpForce: 6
   gravity: -15
   rotationSpeed: 12
+  acceleration: 10
+  deceleration: 8
+  airControl: 3
+  runJumpMultiplier: 1.3
+  knockbackDecay: 5
   canMove: 0
 --- !u!114 &1943901295
 MonoBehaviour:
@@ -4776,9 +4863,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goal: {fileID: 1611734508}
-  npcSpeed: 5.5
-  gravity: -15
+  moveSpeed: 7.5
+  acceleration: 20
   rotationSpeed: 5
+  jumpForce: 6
+  jumpForwardBoost: 1.2
+  jumpCooldown: 1.2
+  detectDistance: 1.4
+  lowRayHeight: 0.4
+  highRayHeight: 1.2
   avoidTime: 0.5
   mistakeChance: 0.08
   canMove: 0
@@ -4860,6 +4953,33 @@ MonoBehaviour:
   stunDuration: 1.5
   rotateObstacle: 0
   rotationSpeed: 120
+--- !u!54 &1943901304
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943901292}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &1990679323
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5031,6 +5151,11 @@ MonoBehaviour:
   jumpForce: 15
   gravity: -15
   rotationSpeed: 12
+  acceleration: 10
+  deceleration: 8
+  airControl: 3
+  runJumpMultiplier: 1.3
+  knockbackDecay: 5
   canMove: 0
 --- !u!143 &1995436680
 CharacterController:
@@ -5344,13 +5469,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42718ca2f975c8b42a2d650cc01ff764, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  countdownTime: 3
   countdownText: {fileID: 2016075538}
   player: {fileID: 1995436679}
   npcs:
   - {fileID: 1324792191}
   - {fileID: 1943901295}
   - {fileID: 500466412}
+  countdownTime: 3
 --- !u!4 &2076444475
 Transform:
   m_ObjectHideFlags: 0
@@ -5727,6 +5852,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c435f48011e092e449f342c298ea438a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1943901301}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c435f48011e092e449f342c298ea438a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1943901304}
   m_SourcePrefab: {fileID: 100100000, guid: c435f48011e092e449f342c298ea438a, type: 3}
 --- !u!1001 &2129102472
 PrefabInstance:

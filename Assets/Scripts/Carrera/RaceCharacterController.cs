@@ -10,6 +10,17 @@ public class RaceCharacterController : MonoBehaviour, IStunnable, IKnockbackable
     public float gravity = -15f;
     public float rotationSpeed = 12f;
 
+    [Header("Momentum / Aceleración")]
+    public float acceleration = 10f;
+    public float deceleration = 8f;
+    public float airControl = 3f;
+
+    [Header("Salto Parkour")]
+    public float runJumpMultiplier = 1.3f;
+
+    [Header("Knockback")]
+    public float knockbackDecay = 5f;
+
     [Header("State")]
     public bool canMove = true;
 
@@ -140,7 +151,12 @@ public class RaceCharacterController : MonoBehaviour, IStunnable, IKnockbackable
     // =============================
     // EMPUJONES / STUN
     // =============================
-    public void ApplyKnockback(Vector3 direction, float force, float stunTime = 0.15f)
+    public void ApplyKnockback(Vector3 direction, float force)
+    {
+        ApplyKnockback(direction, force, 0.15f);
+    }
+
+    public void ApplyKnockback(Vector3 direction, float force, float stunTime)
     {
         direction.y = 0;
         direction.Normalize();

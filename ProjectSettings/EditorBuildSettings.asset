@@ -11,5 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Carrera_Cantina.unity
     guid: c718675325aa9f14fbf85b785a9c54a3
+  - enabled: 1
+    path: Assets/Scenes/Quiz.unity
+    guid: 05f7de5e52a64d840820fe6a7340c73f
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

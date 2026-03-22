@@ -47,6 +47,6 @@ public class RaceManager : MonoBehaviour
 
     void ReturnToHub()
     {
-        SceneManager.LoadScene("Hub");
+        SceneManager.LoadScene("HUB");
     }
 }
